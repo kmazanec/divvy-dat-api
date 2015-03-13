@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Trips</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <th>ID</th>
+      <th>Start Time</th>
+      <th>Stop Time</th>
+      <th>Duration (s)</th>
+      <th>From</th>
+      <th>To</th>
+      <th>User Type</th>
+      <th>Gender</th>
+      <th>Birth Year</th>
+      <th>Link</th>
+    </tr>
+    <% @trips.each do |trip| %>
+      <tr>
+        <td><%= trip.id %></td>
+        <td><%= trip.start_time %></td>
+        <td><%= trip.stop_time %></td>
+        <td><%= trip.trip_duration %></td>
+        <td><%= trip.from_station_name %></td>
+        <td><%= trip.to_station_name %></td>
+        <td><%= trip.user_type %></td>
+        <td><%= trip.gender %></td>
+        <td><%= trip.birth_year %></td>
+        <td><%= link_to 'Show', trip %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
