@@ -4,22 +4,25 @@ TRIPS_FILES = [
   "../Divvy_Trips_2014-Q3-07.csv",
   "../Divvy_Trips_2014-Q4.csv",
   "../Divvy_Trips_2014-Q3-0809.csv",
-  "../Divvy_Trips_2014_Q1Q2.csv"
+  "../Divvy_Trips_2014_Q1Q2.csv",
+  "../Divvy_Trips_2013.csv"
 ]
 
-STATION_FILE = "../Divvy_Stations_2014-Q3Q4.csv"
+STATIONS_FILE = "../Divvy_Stations_2014-Q3Q4.csv"
 
-def parse_trip_file(trip_file)
-  csv_file = CSV.open(trip_file)
-
+def parse_trip_file trip_file
+  csv_file = CSV.open trip_file
   header = csv_file.shift
-  puts header.join(', ')
 
   eof_reached = false
+  display_counter = 0
 
   while !eof_reached do
+    display_counter += 1
+    print "." if display_counter % 100 == 0
+
     inserts = []
-    200.times do
+    500.times do
       if row = csv_file.shift
         row[11] = row[11].to_i
         text = "('" + row.join('\', \'') + "')"
@@ -37,20 +40,16 @@ def parse_trip_file(trip_file)
   end
 end
 
-puts "Each trip file takes ~5 min to load"
-
-TRIPS_FILES.each do |file|
-  puts "Loading trip file #{file} ..."
-  parse_trip_file(file)
-end
-
 def parse_station_file(station_file)
   csv_file = CSV.open(station_file)
-
   header = csv_file.shift
-  puts header.join(', ')
+
+  display_counter = 0
 
   while row = csv_file.shift do
+    display_counter += 1
+    print "." if display_counter % 100 == 0
+
     sql = <<-SQL
       INSERT INTO stations (id, name, latitude, longitude, dpcapacity, online_date)
       VALUES ('#{row.join('\', \'')}')
@@ -59,5 +58,23 @@ def parse_station_file(station_file)
   end
 end
 
-puts "Loading station file (just a few seconds)"
-parse_station_file(STATION_FILE)
+
+puts "\nStarting db:seed..."
+start_time = Time.now
+
+files_to_load = ARGV[1] ? ARGV[1..-1] : TRIPS_FILES
+
+puts "\nLoading these files:"
+puts " => " + files_to_load.join("\n => ")
+
+puts "\nEach trip file takes ~5 min to load"
+
+TRIPS_FILES.each do |file|
+  puts "\nLoading trip file #{file}...\n"
+  parse_trip_file(file)
+end
+
+puts "\nLoading station file (just a few seconds)"
+parse_station_file(STATIONS_FILE)
+
+puts "Done! (#{Time.now - start_time}s)"
